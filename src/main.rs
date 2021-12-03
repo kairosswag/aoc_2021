@@ -2,6 +2,107 @@ aoc_main::main! {
     year 2021;
     day1 : generator => part_1, part_2;
     day2 : generator => part_1, part_2;
+    day3 : generator => part_1, part_2;
+}
+
+mod day3 {
+
+    #[repr(C)]
+    #[derive(Debug, Clone, Copy)]
+    pub struct DiagnosticNumber {
+        digits: [u8; 12],
+    }
+
+    impl DiagnosticNumber {
+
+        pub fn to_dec(&self) -> u32 {
+            self.digits
+                .iter()
+                .rev()
+                .enumerate()
+                .filter(|&(_idx, val)| *val == 49)
+                .fold(0, |accum, (significance, _value)| {
+                    accum + 2u32.pow(significance as u32)
+                })
+        }
+    }
+
+    fn transmute(input: [u8; 12]) -> DiagnosticNumber {
+        unsafe { std::mem::transmute::<[u8; 12], DiagnosticNumber>(input) }
+    }
+
+    pub fn generator(input: &str) -> Vec<DiagnosticNumber> {
+        input
+            .lines()
+            .map(|l| transmute(l.as_bytes()[..12].try_into().expect("Not long enough")))
+            .collect()
+    }
+
+    pub fn part_1(input: &[DiagnosticNumber]) -> u32 {
+        let mut init = [0; 12];
+        for number in input {
+            for (idx, digit) in number.digits.iter().enumerate() {
+                if *digit == 49 {
+                    init[idx] += 1;
+                }
+            }
+        }
+        println!("init is: {:?}, count total is: {}", init, input.len());
+        let treshold = input.len() / 2;
+        let gamma = init
+            .iter()
+            .rev()
+            .enumerate()
+            .filter(|&(_significance, value)| *value > treshold)
+            .fold(0, |accum, (significance, _value)| {
+                accum + 2u32.pow(significance as u32)
+            });
+
+        let epsilon = 2u32.pow(12) - 1 - gamma;
+
+        println!(
+            "epsilon: {}, gamma: {}, both: {}",
+            epsilon,
+            &gamma,
+            epsilon + &gamma
+        );
+        epsilon * gamma
+    }
+
+    pub fn part_2(input: &[DiagnosticNumber]) -> u32 {
+        let oxygen_rating = sieve(input, 0, true);
+        let scrubber_rating = sieve(input, 0, false);
+
+        oxygen_rating.to_dec() * scrubber_rating.to_dec()
+    }
+
+    pub fn sieve(
+        input: &[DiagnosticNumber],
+        index: usize,
+        use_more_common: bool,
+    ) -> DiagnosticNumber {
+        let comp = match (calc_msb_for_index(input, index), use_more_common) {
+            // if ths is some logical pattern i do not get it
+            (true, true) | (false, false) => 49,
+            (false, true) | (true, false) => 48,
+        };
+        let numbers: Vec<DiagnosticNumber> = input
+            .iter()
+            .filter(|i| i.digits[index] == comp)
+            .map(|s| s.to_owned())
+            .collect();
+        if numbers.len() == 1 {
+            return *numbers.get(0).unwrap();
+        } else if numbers.len() == 0 {
+            panic!("This should not happen, nothing found");
+        } else {
+            return sieve(&numbers, index + 1, use_more_common);
+        }
+    }
+
+    pub fn calc_msb_for_index(input: &[DiagnosticNumber], index: usize) -> bool {
+        input.iter().filter(|i| i.digits[index] == 49).count() >= input.len() / 2
+    }
 }
 
 mod day2 {
@@ -65,7 +166,7 @@ mod day2 {
                 Command::Forward(forward) => {
                     pos.horizontal += forward;
                     pos.depth = (pos.depth as i32 + pos.aim * *forward as i32) as u32;
-                },
+                }
                 Command::Down(down) => pos.aim += *down as i32,
                 Command::Up(up) => pos.aim -= *up as i32,
             }
