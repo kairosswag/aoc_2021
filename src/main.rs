@@ -47,7 +47,6 @@ mod day3 {
                 }
             }
         }
-        println!("init is: {:?}, count total is: {}", init, input.len());
         let treshold = input.len() / 2;
         let gamma = init
             .iter()
@@ -60,12 +59,6 @@ mod day3 {
 
         let epsilon = 2u32.pow(12) - 1 - gamma;
 
-        println!(
-            "epsilon: {}, gamma: {}, both: {}",
-            epsilon,
-            &gamma,
-            epsilon + &gamma
-        );
         epsilon * gamma
     }
 
