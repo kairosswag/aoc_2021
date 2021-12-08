@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 aoc-main = { version = "0.3.0", features = ["bench"] }
+itertools = "0.10.3"
 parse-display = "0.5.3"
