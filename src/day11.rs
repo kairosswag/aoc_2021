@@ -1,28 +1,28 @@
-pub fn generator(input: &str) -> Vec<Vec<u32>> {
+pub fn generator(input: &str) -> Vec<Vec<u8>> {
     input
         .lines()
-        .map(|l| l.chars().map(|c| c as u32 - 48).collect())
+        .map(|l| l.chars().map(|c| c as u8 - 48).collect())
         .collect()
 }
 
-pub fn part_1(val: &[Vec<u32>]) -> u32 {
-    let mut val: Vec<Vec<u32>> = val.iter().map(|line| line.clone()).collect();
+pub fn part_1(val: &[Vec<u8>]) -> u16 {
+    let mut val: Vec<Vec<u8>> = val.iter().map(|line| line.clone()).collect();
     let mut spark_count = 0;
 
     for _ in 1..=100 {
         // increase all by 1
         val.iter_mut()
-            .flat_map(|l: &mut Vec<u32>| l.iter_mut())
-            .for_each(|val: &mut u32| *val += 1);
+            .flat_map(|l: &mut Vec<u8>| l.iter_mut())
+            .for_each(|val: &mut u8| *val += 1);
 
         let mut adjacent = Vec::new();
 
         // get initial sparks
         for row in 0..val.len() {
             for column in 0..val[0].len() {
-                if let Some(10) = safe_get(&mut val, row as i32, column as i32) {
+                if let Some(10) = safe_get(&mut val, row as i8, column as i8) {
                     spark_count += 1;
-                    handle_spark(&mut adjacent, row as i32, column as i32);
+                    handle_spark(&mut adjacent, row as i8, column as i8);
                 }
             }
         }
@@ -46,24 +46,24 @@ pub fn part_1(val: &[Vec<u32>]) -> u32 {
     spark_count
 }
 
-pub fn part_2(val: &[Vec<u32>]) -> u32 {
-    let mut val: Vec<Vec<u32>> = val.iter().map(|line| line.clone()).collect();
+pub fn part_2(val: &[Vec<u8>]) -> u32 {
+    let mut val: Vec<Vec<u8>> = val.iter().map(|line| line.clone()).collect();
     
     for step in 1.. {
         let mut spark_count = 0;
         // increase all by 1
         val.iter_mut()
-            .flat_map(|l: &mut Vec<u32>| l.iter_mut())
-            .for_each(|val: &mut u32| *val += 1);
+            .flat_map(|l: &mut Vec<u8>| l.iter_mut())
+            .for_each(|val: &mut u8| *val += 1);
 
         let mut adjacent = Vec::new();
 
         // get initial sparks
         for row in 0..val.len() {
             for column in 0..val[0].len() {
-                if let Some(10) = safe_get(&mut val, row as i32, column as i32) {
+                if let Some(10) = safe_get(&mut val, row as i8, column as i8) {
                     spark_count += 1;
-                    handle_spark(&mut adjacent, row as i32, column as i32);
+                    handle_spark(&mut adjacent, row as i8, column as i8);
                 }
             }
         }
@@ -95,7 +95,7 @@ pub fn part_2(val: &[Vec<u32>]) -> u32 {
     unreachable!()
 }
 
-fn handle_spark(adjacent: &mut Vec<(i32, i32)>, i: i32, j: i32) {
+fn handle_spark(adjacent: &mut Vec<(i8, i8)>, i: i8, j: i8) {
     adjacent.push((i, j - 1)); // N
     adjacent.push((i + 1, j - 1)); // NE
     adjacent.push((i + 1, j)); // E
@@ -106,7 +106,7 @@ fn handle_spark(adjacent: &mut Vec<(i32, i32)>, i: i32, j: i32) {
     adjacent.push((i - 1, j - 1)); // NW
 }
 
-pub fn safe_get(input: &mut [Vec<u32>], xpos: i32, ypos: i32) -> Option<&mut u32> {
+pub fn safe_get(input: &mut [Vec<u8>], xpos: i8, ypos: i8) -> Option<&mut u8> {
     let xpos = if xpos < 0 {
         return None;
     } else {
@@ -121,7 +121,7 @@ pub fn safe_get(input: &mut [Vec<u32>], xpos: i32, ypos: i32) -> Option<&mut u32
     input.get_mut(xpos)?.get_mut(ypos)
 }
 
-pub fn wrap_at(val: u32, max_val: u32) -> u32 {
+pub fn wrap_at(val: u8, max_val: u8) -> u8 {
     if val > max_val {
         0
     } else {
