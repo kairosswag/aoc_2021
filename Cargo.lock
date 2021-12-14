@@ -29,6 +29,7 @@ name = "aoc_2021"
 version = "0.1.0"
 dependencies = [
  "aoc-main",
+ "fnv",
  "itertools",
  "parse-display",
 ]

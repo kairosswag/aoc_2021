@@ -1,5 +1,4 @@
-use std::collections::{HashMap, HashSet};
-
+use fnv::{FnvHashMap, FnvHashSet};
 use itertools::Itertools;
 use parse_display::{Display, FromStr};
 
@@ -13,14 +12,14 @@ pub struct Edge {
 pub fn generator(
     input: &str,
 ) -> (
-    HashMap<u32, Vec<u32>>,
-    HashMap<u32, (bool, String)>,
+    FnvHashMap<u32, Vec<u32>>,
+    FnvHashMap<u32, (bool, String)>,
     u32,
     u32,
 ) {
     let edges: Vec<Edge> = input.lines().map(|l| l.parse::<Edge>().unwrap()).collect();
 
-    let nodes: HashMap<u32, (bool, String)> = (0..)
+    let nodes: FnvHashMap<u32, (bool, String)> = (0..)
         .zip(
             edges
                 .iter()
@@ -30,7 +29,7 @@ pub fn generator(
         )
         .collect();
 
-    let mut map: HashMap<u32, Vec<u32>> = HashMap::new();
+    let mut map: FnvHashMap<u32, Vec<u32>> = FnvHashMap::default();
     edges
         .iter()
         .map(|edge| {
@@ -50,19 +49,19 @@ pub fn generator(
     (map, nodes, start, end)
 }
 
-fn get_reverse(node_map: &HashMap<u32, (bool, String)>, val: &str) -> u32 {
+fn get_reverse(node_map: &FnvHashMap<u32, (bool, String)>, val: &str) -> u32 {
     *node_map.iter().find(|entry| entry.1 .1.eq(&val)).unwrap().0
 }
 
 pub fn part_1(
     (map, nodes, start, end): &(
-        HashMap<u32, Vec<u32>>,
-        HashMap<u32, (bool, String)>,
+        FnvHashMap<u32, Vec<u32>>,
+        FnvHashMap<u32, (bool, String)>,
         u32,
         u32,
     ),
 ) -> u32 {
-    let mut visited = HashSet::new();
+    let mut visited = FnvHashSet::default();
     // println!("map: {:?}", map);
     // println!("nodes: {:?}", nodes);
     visit_rec(*start, &map, &mut visited, &nodes, *end).unwrap()
@@ -70,13 +69,13 @@ pub fn part_1(
 
 pub fn part_2(
     (map, nodes, start, end): &(
-        HashMap<u32, Vec<u32>>,
-        HashMap<u32, (bool, String)>,
+        FnvHashMap<u32, Vec<u32>>,
+        FnvHashMap<u32, (bool, String)>,
         u32,
         u32,
     ),
 ) -> u32 {
-    let mut visited = HashMap::new();
+    let mut visited = FnvHashMap::default();
     visit_rec_2(
         *start,
         &map,
@@ -91,9 +90,9 @@ pub fn part_2(
 
 fn visit_rec(
     curr_node: u32,
-    map: &HashMap<u32, Vec<u32>>,
-    visited: &mut HashSet<u32>,
-    lookup: &HashMap<u32, (bool, String)>,
+    map: &FnvHashMap<u32, Vec<u32>>,
+    visited: &mut FnvHashSet<u32>,
+    lookup: &FnvHashMap<u32, (bool, String)>,
     end: u32,
 ) -> Option<u32> {
     if curr_node == end {
@@ -122,9 +121,9 @@ fn visit_rec(
 
 fn visit_rec_2(
     curr_node: u32,
-    map: &HashMap<u32, Vec<u32>>,
-    visited: &mut HashMap<u32, u32>,
-    lookup: &HashMap<u32, (bool, String)>,
+    map: &FnvHashMap<u32, Vec<u32>>,
+    visited: &mut FnvHashMap<u32, u32>,
+    lookup: &FnvHashMap<u32, (bool, String)>,
     start: u32,
     end: u32,
     allow_twice: bool,
