@@ -1,5 +1,9 @@
+use std::hash::Hasher;
+
 use fnv::{FnvHashMap, FnvHashSet};
 use itertools::Itertools;
+use termcolor::{StandardStream, WriteColor, ColorSpec, Color};
+use std::io::Write;
 
 pub fn generator(input: &str) -> Vec<Vec<u8>> {
     input
@@ -84,6 +88,7 @@ fn dijkstra(
             .unwrap();
 
         if end.map_or(false, |end_val| end_val == curr_node) {
+            print_map(cave_access, predecessor, end.unwrap());
             return Some(*curr_dist);
         }
         edges.remove(&curr_node);
@@ -101,6 +106,34 @@ fn dijkstra(
     }
 
     None
+}
+
+fn print_map(cave_access: &dyn Fn((usize, usize)) -> u32, predecessor: &FnvHashMap<(usize, usize), (usize, usize)>, end: (usize, usize)) {
+    let mut path = Vec::new();
+    let mut curr = end;
+    while curr != (0, 0) {
+        path.push(curr);
+        curr = *predecessor.get(&curr).unwrap();
+    }
+    path.push((0, 0));
+
+    println!("----------- Pathy path: -------------");
+    let mut stdout = StandardStream::stdout(termcolor::ColorChoice::Always);
+    for x in 0..=end.0 {
+        for y in 0..=end.1 {
+            let tuple = (x, y);
+            let in_path = path.contains(&tuple);
+
+            if in_path {
+                let _res = stdout.set_color(ColorSpec::new().set_fg(Some(Color::Red)));
+            }
+            let _res = write!(&mut stdout, "{}", cave_access(tuple));
+            if in_path {
+                let _res = stdout.reset();
+            }
+        }
+        let _res = writeln!(&mut stdout);
+    }
 }
 
 fn update_distance(

@@ -15,6 +15,7 @@ aoc_main::main! {
     // day13: generator => part_1, part_2;
     // day14: generator => part_1, part_2;
     // day15: generator => part_1, part_2;
+    day16: generator => part_1;
 }
 
 // mod day1;
@@ -32,3 +33,4 @@ aoc_main::main! {
 // mod day13;
 // mod day14;
 // mod day15;
+mod day16;
