@@ -10,4 +10,5 @@ aoc-main = { version = "0.3.0", features = ["bench"] }
 fnv = "1.0.7"
 itertools = "0.10.3"
 parse-display = "0.5.3"
+rayon = "1.5.1"
 termcolor = "1.1.2"

@@ -32,6 +32,7 @@ dependencies = [
  "fnv",
  "itertools",
  "parse-display",
+ "rayon",
  "termcolor",
 ]
 
